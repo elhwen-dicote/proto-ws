@@ -1,42 +1,59 @@
 import { getConstructorArgs } from "./decorators-utils";
-import { InjectionToken, Constructor } from "./types";
-import { ClassProvider, isClassProvider } from "./types/class-provider.type";
-import { isConstructor } from "./types/constructor.type";
-import { isInjectionToken } from "./types/injection-token.type";
-import { Provider } from "./types/provider.type";
+import {
+    InjectionToken,
+    isInjectionToken,
+    Constructor,
+    isConstructor,
+    Provider,
+    ClassProvider,
+    isClassProvider,
+    ValueProvider,
+    isValueProvider
+} from "./types";
 
 interface ProviderEntry<T = unknown> {
     readonly provide: InjectionToken<T>;
-    readonly dependencies: InjectionToken<unknown>[];
-    instance?: T;
-    buildInstance(...dependencies: unknown[]): T;
+    readonly instance: T;
 }
 
 class ClassProviderEntry<T = unknown> implements ProviderEntry<T> {
 
     public readonly provide: InjectionToken<T>;
-    public readonly useClass: Constructor<T>;
 
-    private _dependencies?: InjectionToken<unknown>[];
+    private _dependencies: InjectionToken<unknown>[];
+    private _factory: () => T;
     private _instance?: T;
 
-    constructor({ provide, useClass }: ClassProvider<T>) {
+    constructor(
+        { provide, useClass }: ClassProvider<T>,
+        container: Container) {
         this.provide = provide;
-        this.useClass = useClass;
-    }
-
-    get dependencies() {
-        return (this._dependencies ??= getConstructorArgs(this.useClass));
+        this._dependencies = getConstructorArgs(useClass = useClass);
+        this._factory = () => {
+            return new useClass(...this._dependencies.map(
+                (token) => container.get(token)));
+        };
     }
 
     get instance() {
-        return this._instance;
+        return (this._instance ??= this._factory());
     }
 
-    buildInstance(dependencies: unknown[]): T {
-        return (this._instance = new this.useClass(...dependencies));
+}
+
+class ValueProviderEntry<T = unknown> implements ProviderEntry<T> {
+
+    public readonly provide: InjectionToken<T>;
+    public readonly instance: T;
+
+    constructor(
+        { provide, useValue }: ValueProvider<T>
+    ) {
+        this.provide = provide;
+        this.instance = useValue;
     }
 }
+
 
 export class Container {
 
@@ -46,40 +63,51 @@ export class Container {
         private readonly parent?: Container,
     ) { }
 
-    register(constructor: Constructor): void;
-    register(token: InjectionToken, provider: Provider): void;
-    register(token: Constructor | InjectionToken, provider?: Provider) {
-        let providerEntry;
-        if (isConstructor(token) && !provider) {
-            providerEntry = new ClassProviderEntry({ provide: token, useClass: token });
-        } else if (isClassProvider(provider)) {
-            providerEntry = new ClassProviderEntry(provider);
+    register<T>(provider: Constructor<T> | Provider<T>) {
+        let providerEntry: ProviderEntry<T>;
+        let token: InjectionToken<T>;
+
+        if (isConstructor(provider)) {
+            providerEntry = this.createProviderEntry(provider);
+            token = provider;
+
+        } else if (isInjectionToken(provider.provide)) {
+            providerEntry = this.createProviderEntry(provider);
+            token = provider.provide;
+
         } else {
-            throw new Error("unknown provider");
+            throw new Error("unknown token or missing provider");
         }
-        if (isInjectionToken(token)) {
-            this.bindings.set(token, providerEntry);
-        } else throw new Error("unknown token");
+        this.bindings.set(token, providerEntry);
     }
 
     get<T>(token: InjectionToken<T>) {
         let instance: unknown;
         const entry = this.bindings.get(token);
-        if (!entry) {
-            if (!this.parent) {
-                throw new Error("unknown token");
-            } else {
-                instance = this.parent.get<T>(token);
-            }
-        } else {
+        if (entry) {
             instance = entry.instance;
-            if (!instance) {
-                const dependencies = entry.dependencies.map(
-                    (dependency) => this.get(dependency));
-                instance = entry.buildInstance(dependencies);
+        } else {
+            if (this.parent) {
+                instance = this.parent.get<T>(token);
+            } else {
+                throw new Error("unknown token");
             }
         }
         return instance as T;
+    }
+
+    private createProviderEntry<T>(provider: Provider<T> | Constructor<T>): ProviderEntry<T> {
+        let providerEntry: ProviderEntry<T>;
+        if (isConstructor(provider)) {
+            providerEntry = new ClassProviderEntry({ provide: provider, useClass: provider }, this);
+        } else if (isClassProvider<T>(provider)) {
+            providerEntry = new ClassProviderEntry(provider, this);
+        } else if (isValueProvider<T>(provider)) {
+            providerEntry = new ValueProviderEntry(provider);
+        } else {
+            throw new Error("unknown provider");
+        }
+        return providerEntry;
     }
 
 }

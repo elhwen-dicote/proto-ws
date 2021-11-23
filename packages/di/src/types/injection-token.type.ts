@@ -1,8 +1,10 @@
 import { Constructor } from ".";
 import { isConstructor } from "./constructor.type";
 
-export type InjectionToken<T = unknown> = Constructor<T>;
+export type InjectionToken<T = unknown> = Constructor<T> | string | symbol;
 
-export function isInjectionToken(object: unknown): object is InjectionToken {
-    return isConstructor(object);
+export function isInjectionToken<T>(object: unknown): object is InjectionToken<T> {
+    return typeof object === "string"
+        || typeof object === "symbol"
+        || isConstructor(object);
 }

@@ -1,9 +1,9 @@
-import { Constructor } from ".";
-import { ClassProvider, isClassProvider } from "./class-provider.type";
-import { isConstructor } from "./constructor.type";
+import { ValueProvider } from "./value-provider.type";
+import { ClassProvider } from "./class-provider.type";
 
-export type Provider<T = unknown> = ClassProvider<T>;
+export type Provider<T = unknown> = ClassProvider<T> | ValueProvider<T>;
 
-export function isProvider(object: unknown): object is Provider {
-    return isClassProvider(object);
+export function isProvider<T = unknown>(object: unknown): object is Provider<T> {
+    return !!object
+        && (!!(object as Provider<T>).provide);
 }
