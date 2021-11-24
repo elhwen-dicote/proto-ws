@@ -1,5 +1,4 @@
-import { Constructor } from ".";
-import { isConstructor } from "./constructor.type";
+import { Constructor, isConstructor } from "./constructor.type";
 
 export type InjectionToken<T = unknown> = Constructor<T> | string | symbol;
 

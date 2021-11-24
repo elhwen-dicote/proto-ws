@@ -8,7 +8,9 @@ import {
     ClassProvider,
     isClassProvider,
     ValueProvider,
-    isValueProvider
+    isValueProvider,
+    FactoryProvider,
+    isFactoryProvider
 } from "./types";
 
 interface ProviderEntry<T = unknown> {
@@ -31,6 +33,30 @@ class ClassProviderEntry<T = unknown> implements ProviderEntry<T> {
         this._dependencies = getConstructorArgs(useClass = useClass);
         this._factory = () => {
             return new useClass(...this._dependencies.map(
+                (token) => container.get(token)));
+        };
+    }
+
+    get instance() {
+        return (this._instance ??= this._factory());
+    }
+
+}
+
+class FactoryProviderEntry<T = unknown> implements ProviderEntry<T> {
+
+    public readonly provide: InjectionToken<T>;
+
+    private _factory: () => T;
+    private _instance?: T;
+
+    constructor(
+        { provide, useFactory, inject }: FactoryProvider<T>,
+        container: Container,
+    ) {
+        this.provide = provide;
+        this._factory = () => {
+            return useFactory(...(inject ?? []).map(
                 (token) => container.get(token)));
         };
     }
@@ -104,6 +130,8 @@ export class Container {
             providerEntry = new ClassProviderEntry(provider, this);
         } else if (isValueProvider<T>(provider)) {
             providerEntry = new ValueProviderEntry(provider);
+        } else if (isFactoryProvider<T>(provider)) {
+            providerEntry = new FactoryProviderEntry(provider, this);
         } else {
             throw new Error("unknown provider");
         }

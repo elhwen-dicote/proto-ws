@@ -1,5 +1,5 @@
-import { Constructor, InjectionToken } from ".";
-import { isProvider } from "./provider.type";
+import { Constructor } from "./constructor.type";
+import { InjectionToken } from "./injection-token.type";
 
 export interface ClassProvider<T = unknown> {
     provide: InjectionToken<T>;
@@ -7,7 +7,8 @@ export interface ClassProvider<T = unknown> {
 }
 
 export function isClassProvider<T = unknown>(object: unknown): object is ClassProvider<T> {
-    return isProvider<T>(object)
+    return !!object
+        && (!!(object as ClassProvider<T>).provide)
         && (!!(object as ClassProvider<T>).useClass);
 }
 

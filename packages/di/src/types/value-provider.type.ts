@@ -7,6 +7,7 @@ export interface ValueProvider<T = unknown> {
 }
 
 export function isValueProvider<T = unknown>(object: unknown): object is ValueProvider<T> {
-    return isProvider<T>(object)
+    return !!object
+        && (!!(object as ValueProvider<T>).provide)
         && (!!(object as ValueProvider<T>).useValue);
 }

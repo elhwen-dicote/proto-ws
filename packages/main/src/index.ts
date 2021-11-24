@@ -40,7 +40,7 @@ const diparent = new Container();
 const dichild1 = new Container(diparent);
 const dichild2 = new Container(diparent);
 dichild1.register(Dependent);
-dichild1.register({ provide: message2_token, useValue: message2 });
+dichild1.register({ provide: message2_token, useFactory: () => `from factory ${message2}` });
 dichild2.register(Dependent);
 dichild2.register({ provide: message2_token, useValue: message2 });
 diparent.register(Dependence);
