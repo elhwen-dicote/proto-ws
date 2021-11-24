@@ -10,7 +10,9 @@ import {
     ValueProvider,
     isValueProvider,
     FactoryProvider,
-    isFactoryProvider
+    isFactoryProvider,
+    ExistingProvider,
+    isExistingProvider
 } from "./types";
 
 interface ProviderEntry<T = unknown> {
@@ -80,6 +82,27 @@ class ValueProviderEntry<T = unknown> implements ProviderEntry<T> {
     }
 }
 
+class ExistingProviderEntry<T = unknown> implements ProviderEntry<T> {
+
+    public readonly provide: InjectionToken<T>;
+
+    private _factory: () => T;
+    private _instance?: T;
+
+    constructor(
+        { provide, useExisting }: ExistingProvider<T>,
+        container: Container,
+    ) {
+        this.provide = provide;
+        this._factory = () => container.get<T>(useExisting);
+    }
+
+    get instance() {
+        return (this._instance ??= this._factory());
+    }
+
+}
+
 
 export class Container {
 
@@ -90,21 +113,8 @@ export class Container {
     ) { }
 
     register<T>(provider: Constructor<T> | Provider<T>) {
-        let providerEntry: ProviderEntry<T>;
-        let token: InjectionToken<T>;
-
-        if (isConstructor(provider)) {
-            providerEntry = this.createProviderEntry(provider);
-            token = provider;
-
-        } else if (isInjectionToken(provider.provide)) {
-            providerEntry = this.createProviderEntry(provider);
-            token = provider.provide;
-
-        } else {
-            throw new Error("unknown token or missing provider");
-        }
-        this.bindings.set(token, providerEntry);
+        let providerEntry= this.createProviderEntry(provider);
+        this.bindings.set(providerEntry.provide, providerEntry);
     }
 
     get<T>(token: InjectionToken<T>) {
@@ -132,6 +142,8 @@ export class Container {
             providerEntry = new ValueProviderEntry(provider);
         } else if (isFactoryProvider<T>(provider)) {
             providerEntry = new FactoryProviderEntry(provider, this);
+        } else if (isExistingProvider<T>(provider)) {
+            providerEntry = new ExistingProviderEntry(provider, this);
         } else {
             throw new Error("unknown provider");
         }

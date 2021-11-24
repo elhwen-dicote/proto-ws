@@ -6,7 +6,9 @@ export {
     ClassProvider,
     isClassProvider,
     ValueProvider,
-    isValueProvider
+    isValueProvider,
+    ExistingProvider,
+    isExistingProvider
 } from "./types";
 export { Design } from "./metadata-keys";
 export { Container } from "./container";
