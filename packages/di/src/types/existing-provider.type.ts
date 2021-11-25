@@ -3,6 +3,7 @@ import { InjectionToken } from ".";
 export interface ExistingProvider<T = unknown> {
     provide: InjectionToken<T>;
     useExisting: InjectionToken<T>;
+    multi?: boolean;
 }
 
 export function isExistingProvider<T = unknown>(object: unknown): object is ExistingProvider<T> {

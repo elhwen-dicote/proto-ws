@@ -8,6 +8,13 @@ const message2_token = "main:message2";
 const message2: string = "message 2 test";
 const message3_token: string = "main:message3";
 const message3: string = "message 3 test";
+const message4_token: string = "main:message4";
+const message41 = "message 4-1";
+const message42 = {
+    toString() {
+        return "message 4-2";
+    }
+};
 
 class Arg { }
 
@@ -23,17 +30,33 @@ class Dependence {
 }
 
 @injectable()
+class OtherDependence {
+
+    id: number = ++id;
+
+    constructor(
+        @inject(message4_token) private messages: unknown[],
+    ) { }
+
+    print() {
+        return this.messages.join(" - ");
+    }
+}
+
+@injectable()
 class Dependent {
 
     id: number = ++id;
 
     constructor(
         private dependency: Dependence,
+        private other: OtherDependence,
         @inject(message2_token) private message: string,
     ) { }
     print() {
         return `
     Dependent::print  id = ${this.id} -> ${this.message}
+    other dependence::print id = ${this.other.print()}
     dependence print : ${this.dependency.print()}`;
     }
 }
@@ -50,7 +73,10 @@ dichild2.register({ provide: message2_token, useExisting: message3_token });
 diparent.register({ provide: message3_token, useValue: message3 });
 
 diparent.register(Dependence);
+diparent.register(OtherDependence);
 diparent.register({ provide: message1_token, useValue: message1 });
+diparent.register({ provide: message4_token, useValue: message41, multi: true });
+diparent.register({ provide: message4_token, useValue: message42, multi: true });
 
 foreign.register({
     provide: Dependent,
@@ -62,7 +88,10 @@ foreign.register({
     console.log(dependent.print());
 }
 {
-    const dependent = new Dependent(new Dependence(message1), message2);
+    const dependent = new Dependent(
+        new Dependence(message1),
+        new OtherDependence([message41, message42]),
+        message2);
     console.log(dependent.print());
 }
 {

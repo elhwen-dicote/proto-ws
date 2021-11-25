@@ -1,5 +1,5 @@
-import { ValueProvider, isValueProvider } from "./value-provider.type";
 import { ClassProvider, isClassProvider } from "./class-provider.type";
+import { ValueProvider, isValueProvider } from "./value-provider.type";
 import { FactoryProvider, isFactoryProvider } from "./factory-provider.type";
 import { ExistingProvider, isExistingProvider } from ".";
 

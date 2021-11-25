@@ -4,6 +4,7 @@ export interface FactoryProvider<T = unknown> {
     provide: InjectionToken<T>;
     useFactory: (...arg: unknown[]) => T;
     inject?: InjectionToken[];
+    multi?: boolean;
 }
 
 export function isFactoryProvider<T = unknown>(object: unknown): object is FactoryProvider<T> {

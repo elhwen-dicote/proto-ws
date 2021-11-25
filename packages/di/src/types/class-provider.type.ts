@@ -4,6 +4,7 @@ import { InjectionToken } from "./injection-token.type";
 export interface ClassProvider<T = unknown> {
     provide: InjectionToken<T>;
     useClass: Constructor<T>;
+    multi?: boolean;
 }
 
 export function isClassProvider<T = unknown>(object: unknown): object is ClassProvider<T> {

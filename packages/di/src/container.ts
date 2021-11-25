@@ -1,7 +1,6 @@
 import { getConstructorArgs } from "./decorators-utils";
 import {
     InjectionToken,
-    isInjectionToken,
     Constructor,
     isConstructor,
     Provider,
@@ -12,26 +11,21 @@ import {
     FactoryProvider,
     isFactoryProvider,
     ExistingProvider,
-    isExistingProvider
-} from "./types";
+    isExistingProvider} from "./types";
 
 interface ProviderEntry<T = unknown> {
-    readonly provide: InjectionToken<T>;
     readonly instance: T;
 }
 
 class ClassProviderEntry<T = unknown> implements ProviderEntry<T> {
-
-    public readonly provide: InjectionToken<T>;
 
     private _dependencies: InjectionToken<unknown>[];
     private _factory: () => T;
     private _instance?: T;
 
     constructor(
-        { provide, useClass }: ClassProvider<T>,
+        { useClass }: ClassProvider<T>,
         container: Container) {
-        this.provide = provide;
         this._dependencies = getConstructorArgs(useClass = useClass);
         this._factory = () => {
             return new useClass(...this._dependencies.map(
@@ -47,16 +41,13 @@ class ClassProviderEntry<T = unknown> implements ProviderEntry<T> {
 
 class FactoryProviderEntry<T = unknown> implements ProviderEntry<T> {
 
-    public readonly provide: InjectionToken<T>;
-
     private _factory: () => T;
     private _instance?: T;
 
     constructor(
-        { provide, useFactory, inject }: FactoryProvider<T>,
+        { useFactory, inject }: FactoryProvider<T>,
         container: Container,
     ) {
-        this.provide = provide;
         this._factory = () => {
             return useFactory(...(inject ?? []).map(
                 (token) => container.get(token)));
@@ -71,35 +62,55 @@ class FactoryProviderEntry<T = unknown> implements ProviderEntry<T> {
 
 class ValueProviderEntry<T = unknown> implements ProviderEntry<T> {
 
-    public readonly provide: InjectionToken<T>;
     public readonly instance: T;
 
     constructor(
-        { provide, useValue }: ValueProvider<T>
+        { useValue }: ValueProvider<T>
     ) {
-        this.provide = provide;
         this.instance = useValue;
     }
 }
 
 class ExistingProviderEntry<T = unknown> implements ProviderEntry<T> {
 
-    public readonly provide: InjectionToken<T>;
-
     private _factory: () => T;
     private _instance?: T;
 
     constructor(
-        { provide, useExisting }: ExistingProvider<T>,
+        { useExisting }: ExistingProvider<T>,
         container: Container,
     ) {
-        this.provide = provide;
         this._factory = () => container.get<T>(useExisting);
     }
 
     get instance() {
         return (this._instance ??= this._factory());
     }
+
+}
+
+class MultiProviderEntry<T = unknown> implements ProviderEntry<T[]> {
+
+    private entries: ProviderEntry<T>[] = [];
+    private _factory: () => T[];
+
+    constructor(
+    ) {
+        this._factory = () => this.entries.map(
+            (entry) => entry.instance
+        );
+    }
+
+    addEntry(entry: ProviderEntry<T>) {
+        if (!this.entries.includes(entry)) {
+            this.entries.push(entry);
+        }
+    }
+
+    get instance() {
+        return this._factory();
+    }
+
 
 }
 
@@ -113,8 +124,29 @@ export class Container {
     ) { }
 
     register<T>(provider: Constructor<T> | Provider<T>) {
-        let providerEntry= this.createProviderEntry(provider);
-        this.bindings.set(providerEntry.provide, providerEntry);
+        if (isConstructor<T>(provider)) {
+            provider = { provide: provider, useClass: provider };
+        }
+
+        const isMulti = provider.multi ?? false;
+
+        if (isMulti) {
+            let currentEntry = this.bindings.get(provider.provide);
+            if (!currentEntry) {
+                currentEntry = new MultiProviderEntry();
+                this.bindings.set(provider.provide, currentEntry);
+            } else if (!(currentEntry instanceof MultiProviderEntry)) {
+                throw new Error("Cannot add multi provider to non multi binding");
+            }
+            (currentEntry as MultiProviderEntry<T>).addEntry(this.createSingleProviderEntry(provider));
+
+        } else {
+            if (this.bindings.has(provider.provide)) {
+                throw new Error("Multiply defined binding");
+            } else {
+                this.bindings.set(provider.provide, this.createSingleProviderEntry(provider));
+            }
+        }
     }
 
     get<T>(token: InjectionToken<T>) {
@@ -126,17 +158,15 @@ export class Container {
             if (this.parent) {
                 instance = this.parent.get<T>(token);
             } else {
-                throw new Error("unknown token");
+                throw new Error(`unknown token ${String(token)}`);
             }
         }
         return instance as T;
     }
 
-    private createProviderEntry<T>(provider: Provider<T> | Constructor<T>): ProviderEntry<T> {
+    private createSingleProviderEntry<T>(provider: Provider<T>): ProviderEntry<T> {
         let providerEntry: ProviderEntry<T>;
-        if (isConstructor(provider)) {
-            providerEntry = new ClassProviderEntry({ provide: provider, useClass: provider }, this);
-        } else if (isClassProvider<T>(provider)) {
+        if (isClassProvider<T>(provider)) {
             providerEntry = new ClassProviderEntry(provider, this);
         } else if (isValueProvider<T>(provider)) {
             providerEntry = new ValueProviderEntry(provider);
