@@ -1,9 +1,8 @@
 {
-  "name": "@proto/di",
+  "name": "@proto/utils",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "no-types": "./src",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

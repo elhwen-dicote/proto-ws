@@ -1,3 +1,4 @@
+import { getOrCreate, setIfNotPresent } from "@proto/utils";
 import { getConstructorArgs } from "./decorators-utils";
 import {
     InjectionToken,
@@ -11,7 +12,8 @@ import {
     FactoryProvider,
     isFactoryProvider,
     ExistingProvider,
-    isExistingProvider} from "./types";
+    isExistingProvider
+} from "./types";
 
 interface ProviderEntry<T = unknown> {
     readonly instance: T;
@@ -94,8 +96,7 @@ class MultiProviderEntry<T = unknown> implements ProviderEntry<T[]> {
     private entries: ProviderEntry<T>[] = [];
     private _factory: () => T[];
 
-    constructor(
-    ) {
+    constructor() {
         this._factory = () => this.entries.map(
             (entry) => entry.instance
         );
@@ -123,29 +124,35 @@ export class Container {
         private readonly parent?: Container,
     ) { }
 
-    register<T>(provider: Constructor<T> | Provider<T>) {
-        if (isConstructor<T>(provider)) {
-            provider = { provide: provider, useClass: provider };
-        }
+    register<T>(constructorOrProvider: Constructor<T> | Provider<T>) {
+        const provider: Provider<T> = (isConstructor<T>(constructorOrProvider)) ?
+            {
+                provide: constructorOrProvider,
+                useClass: constructorOrProvider
+            }
+            : constructorOrProvider;
 
         const isMulti = provider.multi ?? false;
 
         if (isMulti) {
-            let currentEntry = this.bindings.get(provider.provide);
-            if (!currentEntry) {
-                currentEntry = new MultiProviderEntry();
-                this.bindings.set(provider.provide, currentEntry);
-            } else if (!(currentEntry instanceof MultiProviderEntry)) {
+            let currentEntry = getOrCreate(
+                this.bindings,
+                provider.provide,
+                () => new MultiProviderEntry<T>());
+
+            if (currentEntry instanceof MultiProviderEntry) {
+                currentEntry.addEntry(this.createSingleProviderEntry(provider));
+            } else {
                 throw new Error("Cannot add multi provider to non multi binding");
             }
-            (currentEntry as MultiProviderEntry<T>).addEntry(this.createSingleProviderEntry(provider));
 
         } else {
-            if (this.bindings.has(provider.provide)) {
-                throw new Error("Multiply defined binding");
-            } else {
-                this.bindings.set(provider.provide, this.createSingleProviderEntry(provider));
-            }
+            setIfNotPresent(
+                this.bindings,
+                provider.provide,
+                () => this.createSingleProviderEntry(provider),
+                () => new Error("Multiply defined binding")
+            );
         }
     }
 
