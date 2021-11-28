@@ -28,7 +28,7 @@ class ClassProviderEntry<T = unknown> implements ProviderEntry<T> {
     constructor(
         { useClass }: ClassProvider<T>,
         container: Container) {
-        this._dependencies = getConstructorArgs(useClass = useClass);
+        this._dependencies = getConstructorArgs(useClass);
         this._factory = () => {
             return new useClass(...this._dependencies.map(
                 (token) => container.get(token)));
