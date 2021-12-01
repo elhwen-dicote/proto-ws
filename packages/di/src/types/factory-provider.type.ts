@@ -1,3 +1,4 @@
+import { Scope } from ".";
 import { InjectionToken } from "./injection-token.type";
 
 export interface FactoryProvider<T = unknown> {
@@ -5,6 +6,7 @@ export interface FactoryProvider<T = unknown> {
     useFactory: (...arg: unknown[]) => T;
     inject?: InjectionToken[];
     multi?: boolean;
+    scope?: Scope;
 }
 
 export function isFactoryProvider<T = unknown>(object: unknown): object is FactoryProvider<T> {

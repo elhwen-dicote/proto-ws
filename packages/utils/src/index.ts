@@ -18,10 +18,11 @@ export function getOrCreate<K, V>(
     key: K,
     create: () => V): V;
 export function getOrCreate<V>(map: any, key: any, create: () => V) {
-    let value = map.get(key);
-    if (value === undefined) {
-        value = create();
-        map.set(key, value);
+    let value: V;
+    if (map.has(key)) {
+        value = map.get(key);
+    } else {
+        map.set(key, (value = create()));
     }
     return value;
 }
@@ -36,7 +37,7 @@ export function getOrCreate<V>(map: any, key: any, create: () => V) {
  * @param key key to get.
  * @param create function to create value if not present.
  * @param error function to create error to throw if entry is present. May be null
- * @returns the value set in the map, undefined if an entry was already present for the key.
+ * @returns the value set in the map, undefined if an entry was already present for the key and error is null.
  */
 export function setIfNotPresent<K extends object, V>(
     map: WeakMap<K, V>,

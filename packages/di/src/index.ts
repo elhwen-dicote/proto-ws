@@ -11,4 +11,4 @@ export {
     isExistingProvider
 } from "./types";
 export { Design } from "./metadata-keys";
-export { Container } from "./container";
+export { Container } from "./container/container";

@@ -1,104 +1,74 @@
 import { injectable, Container, inject } from "@proto/di";
+import { RequestScopeContext, Scope } from "di/src/types";
 
 let id: number = 0;
 
-const message1_token = "main:message1";
-const message1: string = "message 1 test";
-const message2_token = "main:message2";
-const message2: string = "message 2 test";
-const message3_token: string = "main:message3";
-const message3: string = "message 3 test";
-const message4_token: string = "main:message4";
-const message41 = "message 4-1";
-const message42 = {
-    toString() {
-        return "message 4-2";
-    }
-};
-
-class Arg { }
+const message1_token = Symbol("message1 token");
+const message2_token = Symbol("message2 token");
 
 @injectable()
-class Dependence {
+class Logger {
 
-    id: number = ++id;
+    private readonly id: number = ++id;
 
-    constructor(@inject(message1_token) private readonly message: string,) { }
-    print() {
-        return `Dependence::print id = ${this.id} -> ${this.message}`;
+    constructor() {
+        console.log(`build Logger ${this.id}`);
+    }
+
+    log(message: string) {
+        console.log(`Logger -> ${message}`);
     }
 }
 
 @injectable()
-class OtherDependence {
+class Client {
 
-    id: number = ++id;
+    private readonly id: number = ++id;
 
     constructor(
-        @inject(message4_token) private messages: unknown[],
-    ) { }
+        private logger: Logger,
+        @inject(message1_token) private readonly msg1: string,
+        @inject(message2_token) private readonly msg2: string,
+    ) {
+        console.log(`build Client ${this.id}`);
+    }
 
     print() {
-        return this.messages.join(" - ");
+        this.logger.log([this.msg1, this.msg2].join(" / "));
     }
 }
 
-@injectable()
-class Dependent {
+const container = new Container();
 
-    id: number = ++id;
-
-    constructor(
-        private dependency: Dependence,
-        private other: OtherDependence,
-        @inject(message2_token) private message: string,
-    ) { }
-    print() {
-        return `
-    Dependent::print  id = ${this.id} -> ${this.message}
-    other dependence::print id = ${this.other.print()}
-    dependence print : ${this.dependency.print()}`;
-    }
-}
-
-const diparent = new Container();
-const dichild1 = new Container(diparent);
-const dichild2 = new Container(diparent);
-const foreign = new Container();
-dichild1.register(Dependent);
-dichild1.register({ provide: message2_token, useFactory: () => `from factory ${message2}` });
-
-dichild2.register(Dependent);
-dichild2.register({ provide: message2_token, useExisting: message3_token });
-diparent.register({ provide: message3_token, useValue: message3 });
-
-diparent.register(Dependence);
-diparent.register(OtherDependence);
-diparent.register({ provide: message1_token, useValue: message1 });
-diparent.register({ provide: message4_token, useValue: message41, multi: true });
-diparent.register({ provide: message4_token, useValue: message42, multi: true });
-
-foreign.register({
-    provide: Dependent,
-    useFactory: () => dichild2.get<Dependent>(Dependent)
+container.register<string>({
+    provide: message1_token,
+    scope: Scope.Request,
 });
 
-{
-    const dependent = dichild1.get<Dependent>(Dependent);
-    console.log(dependent.print());
-}
-{
-    const dependent = new Dependent(
-        new Dependence(message1),
-        new OtherDependence([message41, message42]),
-        message2);
-    console.log(dependent.print());
-}
-{
-    const dependent = dichild2.get<Dependent>(Dependent);
-    console.log(dependent.print());
-}
-{
-    const dependent = foreign.get<Dependent>(Dependent);
-    console.log(dependent.print());
-}
+container.register<string>({
+    provide: message2_token,
+    scope: Scope.Request,
+});
+
+container.register(Logger);
+
+container.register({
+    provide: Client,
+    useClass: Client,
+    scope:Scope.Request,
+});
+
+const request1 = RequestScopeContext.create();
+container.configureScopeContext(request1, [
+    [message1_token, "message 1 from request 1"],
+    [message2_token, "message 2 from request 1"],
+]);
+
+const request2 = RequestScopeContext.create();
+container.configureScopeContext(request2, [
+    [message1_token, "message 1 from request 2"],
+    [message2_token, "message 2 from request 2"],
+]);
+
+container.get<Client>(Client, request1).print();
+container.get<Client>(Client, request2).print();
