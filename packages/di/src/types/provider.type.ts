@@ -1,7 +1,7 @@
 import { ClassProvider, isClassProvider } from "./class-provider.type";
 import { ValueProvider, isValueProvider } from "./value-provider.type";
 import { FactoryProvider, isFactoryProvider } from "./factory-provider.type";
-import { ExistingProvider, isExistingProvider } from ".";
+import { ExistingProvider, isExistingProvider } from "./existing-provider.type";
 import { isScopedValueProvider, ScopedValueProvider } from "./scoped-value-provider.type";
 
 export type Provider<T = unknown> =

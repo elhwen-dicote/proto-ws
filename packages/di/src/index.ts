@@ -20,3 +20,4 @@ export {
     RequestScopeContext,
 } from "./types";
 export { Container } from "./container/container";
+console.log("index")

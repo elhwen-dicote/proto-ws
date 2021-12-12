@@ -1,6 +1,5 @@
-import { Design } from "..";
-import { ReflectKeys } from "../metadata-keys";
 import { ClassDecorator } from "../types/class-decorator.type";
+import { ReflectKeys, Design } from "./metadata-keys";
 
 export function injectable(): ClassDecorator {
     return (Cls) => {

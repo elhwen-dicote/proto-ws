@@ -1,4 +1,4 @@
-import { InjectionToken } from ".";
+import { InjectionToken } from "./injection-token.type";
 
 export interface ExistingProvider<T = unknown> {
     provide: InjectionToken<T>;

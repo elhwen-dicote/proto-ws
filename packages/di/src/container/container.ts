@@ -8,9 +8,9 @@ import {
     isValueProvider,
     isFactoryProvider,
     isExistingProvider,
+    isScopedValueProvider,
     ScopeContext
 } from "../types";
-import { isScopedValueProvider } from "../types/scoped-value-provider.type";
 import {
     ClassProviderEntry,
     ExistingProviderEntry,
@@ -29,7 +29,7 @@ export class Container {
         private readonly parent?: Container,
     ) { }
 
-    register<T>(constructorOrProvider: Constructor<T> | Provider<T>):this {
+    register<T>(constructorOrProvider: Constructor<T> | Provider<T>): this {
         const provider: Provider<T> = (isConstructor<T>(constructorOrProvider)) ?
             {
                 provide: constructorOrProvider,

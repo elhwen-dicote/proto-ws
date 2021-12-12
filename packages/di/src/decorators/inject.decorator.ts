@@ -1,5 +1,5 @@
-import { Design, InjectionToken } from "..";
-import { ReflectKeys } from "../metadata-keys";
+import { InjectionToken } from "../types";
+import { ReflectKeys, Design } from "./metadata-keys";
 
 export function inject(token: InjectionToken): ParameterDecorator {
 

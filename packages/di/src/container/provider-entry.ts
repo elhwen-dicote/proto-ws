@@ -1,8 +1,21 @@
-import { ClassProvider, Container, InjectionToken } from "..";
-import { getConstructorArgs } from "../decorators-utils";
-import { FactoryProvider, ValueProvider, ExistingProvider, Scope, ScopeContext, isStatic } from "../types";
-import { ScopedValueProvider } from "../types/scoped-value-provider.type";
-import { InstanceFactory, ScopedInstanceFactory, SingletonInstanceFactory, TransientInstanceFactory } from "./instance-factory";
+import { getConstructorArgs } from "../decorators";
+import {
+    ClassProvider,
+    FactoryProvider,
+    ValueProvider,
+    ExistingProvider,
+    ScopedValueProvider,
+    Scope,
+    ScopeContext,
+    isStatic,
+} from "../types";
+import {
+    InstanceFactory,
+    ScopedInstanceFactory,
+    SingletonInstanceFactory,
+    TransientInstanceFactory
+} from "./instance-factory";
+import { Container } from "./container";
 
 export interface ProviderEntry<T = unknown> {
     getInstance(context: ScopeContext | null): T;
