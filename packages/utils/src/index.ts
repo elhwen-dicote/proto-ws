@@ -1,5 +1,3 @@
-import { isValueProvider } from "@proto/di";
-
 /**
  * Get an entry for key in map. If entry is not present, creates one with
  * create and set it in the map for key.

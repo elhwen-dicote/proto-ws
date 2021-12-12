@@ -1,14 +1,22 @@
 import "reflect-metadata";
 export { injectable, inject } from "./decorators";
 export {
-    Constructor,
+    // Constructor,
     InjectionToken,
-    ClassProvider,
-    isClassProvider,
-    ValueProvider,
-    isValueProvider,
-    ExistingProvider,
-    isExistingProvider
+    // isInjectionToken,
+    // Provider,
+    // isProvider,
+    // ClassProvider,
+    // isClassProvider,
+    // ValueProvider,
+    // isValueProvider,
+    // FactoryProvider,
+    // isFactoryProvider,
+    // ExistingProvider,
+    // isExistingProvider,
+    Scope,
+    // isStatic,
+    ScopeContext,
+    RequestScopeContext,
 } from "./types";
-export { Design } from "./metadata-keys";
 export { Container } from "./container/container";

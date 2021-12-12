@@ -29,7 +29,7 @@ export class Container {
         private readonly parent?: Container,
     ) { }
 
-    register<T>(constructorOrProvider: Constructor<T> | Provider<T>) {
+    register<T>(constructorOrProvider: Constructor<T> | Provider<T>):this {
         const provider: Provider<T> = (isConstructor<T>(constructorOrProvider)) ?
             {
                 provide: constructorOrProvider,
@@ -61,6 +61,7 @@ export class Container {
                 () => new Error("Multiply defined binding")
             );
         }
+        return this;
     }
 
     get<T>(token: InjectionToken<T>, context: ScopeContext | null = null) {
