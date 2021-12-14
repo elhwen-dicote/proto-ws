@@ -1,7 +1,6 @@
 import "reflect-metadata";
 export { injectable, inject } from "./decorators";
 export {
-    // Constructor,
     InjectionToken,
     // isInjectionToken,
     // Provider,
@@ -20,4 +19,4 @@ export {
     RequestScopeContext,
 } from "./types";
 export { Container } from "./container/container";
-console.log("index")
+console.log("index");

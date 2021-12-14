@@ -1,8 +1,11 @@
-import { getOrCreate, setIfNotPresent } from "@proto/utils";
+import {
+    getOrCreate,
+    setIfNotPresent,
+    Constructor,
+    isConstructor
+} from "@proto/utils";
 import {
     InjectionToken,
-    Constructor,
-    isConstructor,
     Provider,
     isClassProvider,
     isValueProvider,

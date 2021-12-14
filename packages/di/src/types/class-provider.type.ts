@@ -1,5 +1,5 @@
+import { Constructor } from "@proto/utils";
 import { Scope } from "./scope.type";
-import { Constructor } from "./constructor.type";
 import { InjectionToken } from "./injection-token.type";
 
 export interface ClassProvider<T = unknown> {

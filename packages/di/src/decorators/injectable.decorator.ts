@@ -1,4 +1,4 @@
-import { ClassDecorator } from "../types/class-decorator.type";
+import { ClassDecorator } from "@proto/utils";
 import { ReflectKeys, Design } from "./metadata-keys";
 
 export function injectable(): ClassDecorator {
