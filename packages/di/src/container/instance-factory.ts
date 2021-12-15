@@ -1,4 +1,4 @@
-import { getOrCreate, setIfNotPresent } from "utils/src/map-utils.ts/map-utils";
+import { getOrCreate, setIfNotPresent } from "@proto/utils";
 import { ScopeContext } from "../types";
 
 export interface InstanceFactory<T> {

@@ -12,7 +12,7 @@ import {
     isFactoryProvider,
     isExistingProvider,
     isScopedValueProvider,
-    ScopeContext
+    ScopeContext,
 } from "../types";
 import {
     ClassProviderEntry,
