@@ -1,22 +1,9 @@
-import http from "http";
-import { app } from "./app";
+import { Server } from "@proto/e-serv";
+import { route } from "./route";
 
-const server = http.createServer(app);
+const PORT = parseInt(process.env.PORT ?? "3000");
 
-const port = process.env.PORT ?? 3000;
-server
-    .addListener("listening",
-        function onListening() {
-            console.log(`server listening on port ${port}`);
-        })
-    .addListener("error",
-        function onError(error) {
-            console.log(`server error: ${error.message ?? error.name ?? error}`);
-            process.exit(1);
-        })
-    .addListener("close",
-        function onClose() {
-            console.log("server closing...");
-        });
+const server = new Server();
+server.expressApplication.use("/body", route);
+server.listen(PORT);
 
-server.listen(port);

@@ -1,11 +1,11 @@
 import express from "express";
 import {
-    InjectionToken,
     RequestScopeContext,
     Scope,
     ScopeContext
 } from "@proto/di";
-import { rootContainer } from "./container/container";
+import { rootContainer } from "../container/container";
+import { InjectionTokens } from "../injection-tokens";
 
 declare global {
     namespace Express {
@@ -14,12 +14,6 @@ declare global {
         }
     }
 }
-
-export const InjectionTokens: Record<string, InjectionToken> = {
-    REQUEST: Symbol("express.Request"),
-    RESPONSE: Symbol("express.Response"),
-    BODY: Symbol("request.body"),
-};
 
 rootContainer
     .register({

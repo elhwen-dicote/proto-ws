@@ -1,5 +1,6 @@
 export {
-    setupRequestDiMiddleware,
     InjectionTokens,
-} from "./setupDi";
-export { rootContainer } from "./container/container";
+} from "./injection-tokens";
+export { rootContainer } from "./container";
+export { module } from "./decorators";
+export { Server } from "./application";
