@@ -5,5 +5,5 @@ export enum Design {
 }
 
 export const ReflectKeys = {
-    CONSTRUCTOR_DEPENDENCIES: Symbol("Constructor dependencies"),
+    ARGUMENT_DEPENDENCIES: Symbol("Argument dependencies"),
 };

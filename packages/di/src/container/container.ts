@@ -13,6 +13,7 @@ import {
     isExistingProvider,
     isScopedValueProvider,
     ScopeContext,
+    formatToken,
 } from "../types";
 import {
     ClassProviderEntry,
@@ -76,7 +77,7 @@ export class Container {
             if (this.parent) {
                 instance = this.parent.get<T>(token, context);
             } else {
-                throw new Error(`unknown token ${String(token)}`);
+                throw new Error(`unknown token ${formatToken(token)}`);
             }
         }
         return instance as T;

@@ -1,4 +1,4 @@
-import { getConstructorArgs } from "../decorators";
+import { getArgumentDependencies } from "../decorators";
 import {
     ClassProvider,
     FactoryProvider,
@@ -31,7 +31,7 @@ export class ClassProviderEntry<T = unknown> implements ProviderEntry<T> {
         container: Container) {
 
         this.scope = scope ?? Scope.Singleton;
-        const dependencies = getConstructorArgs(useClass);
+        const dependencies = getArgumentDependencies(useClass);
 
         const factory = (context: ScopeContext | null) => {
             context = context?.getEnclosingContext(this.scope) ?? null;
