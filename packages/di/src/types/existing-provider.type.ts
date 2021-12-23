@@ -1,8 +1,8 @@
 import { InjectionToken } from "./injection-token.type";
 
 export interface ExistingProvider<T = unknown> {
-    provide: InjectionToken<T>;
-    useExisting: InjectionToken<T>;
+    provide: InjectionToken;
+    useExisting: InjectionToken;
     multi?: boolean;
 }
 

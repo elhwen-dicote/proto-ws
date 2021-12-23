@@ -3,7 +3,7 @@ import { Scope } from "./scope.type";
 import { InjectionToken } from "./injection-token.type";
 
 export interface ClassProvider<T = unknown> {
-    provide: InjectionToken<T>;
+    provide: InjectionToken;
     useClass: Constructor<T>;
     multi?: boolean;
     scope?: Scope;

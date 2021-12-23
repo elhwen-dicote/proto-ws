@@ -2,7 +2,7 @@ import { Scope } from "./scope.type";
 import { InjectionToken } from "./injection-token.type";
 
 export interface FactoryProvider<T = unknown> {
-    provide: InjectionToken<T>;
+    provide: InjectionToken;
     useFactory: (...arg: any[]) => T;
     inject?: InjectionToken[];
     multi?: boolean;

@@ -68,7 +68,7 @@ export class Container {
         return this;
     }
 
-    get<T>(token: InjectionToken<T>, context: ScopeContext | null = null) {
+    get<T>(token: InjectionToken, context: ScopeContext | null = null): T {
         let instance: unknown;
         const entry = this.bindings.get(token);
         if (entry) {

@@ -4,24 +4,24 @@ import { rootContainer } from "../container";
 import { InjectionTokens } from "../injection-tokens";
 import { setupRequestDiMiddleware } from "../middleware";
 import { Middleware, MiddlewareCallback, MiddlewareMount } from "../types/middleware-mount";
-import { Constructor, isConstructor } from "@proto/utils";
+import { Constructor } from "@proto/utils";
 import { getArgumentDependencies } from "di/src/decorators/decorators-utils";
 
-rootContainer.register({
+rootContainer.register<MiddlewareMount>({
     provide: InjectionTokens.MIDDLEWARE_MOUNT,
     useValue: {
         middleware: setupRequestDiMiddleware
     },
     multi: true,
 });
-rootContainer.register({
+rootContainer.register<MiddlewareMount>({
     provide: InjectionTokens.MIDDLEWARE_MOUNT,
     useValue: {
         middleware: express.json()
     },
     multi: true,
 });
-rootContainer.register({
+rootContainer.register<MiddlewareMount>({
     provide: InjectionTokens.MIDDLEWARE_MOUNT,
     useValue: {
         middleware: express.urlencoded({
@@ -95,7 +95,7 @@ function isMiddlewareConstructor(mount: MiddlewareCallback): mount is Constructo
 
 function buildRequestHandler(middlewareClass: Constructor<Middleware>): express.RequestHandler {
     const tokens = getArgumentDependencies(middlewareClass, "callback");
-    const instance = rootContainer.get(middlewareClass);
+    const instance = rootContainer.get<Middleware>(middlewareClass);
     return (request, response, next): void => {
         try {
             const scopeContext = request.context;

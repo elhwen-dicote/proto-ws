@@ -26,7 +26,7 @@ rootContainer
     })
     .register({
         provide: InjectionTokens.BODY,
-        useFactory: (request: express.Request) => {
+        useFactory: (request: express.Request): any => {
             return request.body;
         },
         scope: Scope.Request,

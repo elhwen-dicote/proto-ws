@@ -4,3 +4,9 @@ export {
 export { rootContainer } from "./container";
 export { module } from "./decorators";
 export { Server } from "./application";
+export {
+    ModuleOptions,
+    Middleware,
+    MiddlewareMount,
+    MiddlewareCallback
+} from "./types";

@@ -1,7 +1,7 @@
 import { InjectionToken } from "./injection-token.type";
 
 export interface ValueProvider<T = unknown> {
-    provide: InjectionToken<T>;
+    provide: InjectionToken;
     useValue: T;
     multi?: boolean;
 }

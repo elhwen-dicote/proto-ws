@@ -4,7 +4,7 @@ import { isClassProvider } from "./class-provider.type";
 import { isFactoryProvider } from "./factory-provider.type";
 
 export interface ScopedValueProvider<T = unknown> {
-    provide: InjectionToken<T>;
+    provide: InjectionToken;
     scope: Scope;
 }
 
