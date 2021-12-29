@@ -3,7 +3,7 @@ import express from "express";
 import { rootContainer } from "../container";
 import { InjectionTokens } from "../injection-tokens";
 import { setupRequestDiMiddleware } from "../middleware";
-import { Middleware, MiddlewareCallback, MiddlewareMount } from "../types/middleware-mount";
+import { Middleware, MiddlewareCallback, MiddlewareMount } from "../types/middleware-mount.type";
 import { Constructor } from "@proto/utils";
 import { getArgumentDependencies } from "di/src/decorators/decorators-utils";
 

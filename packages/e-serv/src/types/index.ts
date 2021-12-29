@@ -1,6 +1,6 @@
-export { ModuleOptions } from "./module-options";
+export { ModuleOptions } from "./module-options.type";
 export {
     MiddlewareMount,
     Middleware,
     MiddlewareCallback
-} from "./middleware-mount";
+} from "./middleware-mount.type";
