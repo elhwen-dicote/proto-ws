@@ -1,11 +1,12 @@
 import http from "http";
 import express from "express";
+import { Constructor } from "@proto/utils";
+import { getArgumentDependencies } from "@proto/di";
 import { rootContainer } from "../container";
 import { InjectionTokens } from "../injection-tokens";
 import { setupRequestDiMiddleware } from "../middleware";
-import { Middleware, MiddlewareCallback, MiddlewareMount } from "../types/middleware-mount.type";
-import { Constructor } from "@proto/utils";
-import { getArgumentDependencies } from "di/src/decorators/decorators-utils";
+import { Middleware, MiddlewareMount } from "../types/middleware-mount.type";
+import { isMiddlewareConstructor } from "../types";
 import { parseModuleOptions } from "./module-manager";
 
 rootContainer.register<MiddlewareMount>({
@@ -76,11 +77,6 @@ function initMiddlewares(app: express.Application) {
             app.use(callback);
         }
     }
-}
-
-function isMiddlewareConstructor(mount: MiddlewareCallback): mount is Constructor<Middleware> {
-    return mount instanceof Function
-        && mount?.prototype instanceof Middleware;
 }
 
 function buildRequestHandler(middlewareClass: Constructor<Middleware>): express.RequestHandler {

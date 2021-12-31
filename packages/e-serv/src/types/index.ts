@@ -4,3 +4,8 @@ export {
     Middleware,
     MiddlewareCallback
 } from "./middleware-mount.type";
+export {
+    ClassType,
+    isModuleConstructor,
+    isMiddlewareConstructor
+} from "./class-type.type";

@@ -1,15 +1,14 @@
 import { inject, injectable } from "@proto/di";
 import { InjectionTokens, Middleware } from "@proto/e-serv";
+import { middleware } from "e-serv/src/decorators/middleware.decorator";
 import { Logger } from "./logger";
 
-@injectable()
-export class LoggerMiddleware extends Middleware {
+@middleware()
+export class LoggerMiddleware implements Middleware {
 
     constructor(
         private logger: Logger,
-    ) {
-        super();
-    }
+    ) { }
 
     callback(@inject(InjectionTokens.BODY) body: unknown): void {
         this.logger.log(`New request... body = ${JSON.stringify(body)}`);

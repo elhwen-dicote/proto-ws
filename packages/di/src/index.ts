@@ -1,5 +1,9 @@
 import "reflect-metadata";
-export { injectable, inject } from "./decorators";
+export {
+    injectable,
+    inject,
+    getArgumentDependencies
+} from "./decorators";
 export {
     InjectionToken,
     // isInjectionToken,
