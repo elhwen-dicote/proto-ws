@@ -1,7 +1,7 @@
-import { InjectionTokens, rootContainer, Server } from "@proto/e-serv";
-import { MiddlewareMount } from "@proto/e-serv";
+import { rootContainer, Server } from "@proto/e-serv";
 import { Logger, prefix_token } from "./logger";
 import { LoggerMiddleware } from "./logger-middleware";
+import { MainModule } from "./main-module";
 import { route } from "./route";
 
 const PORT = parseInt(process.env.PORT ?? "3000");
@@ -17,15 +17,8 @@ rootContainer.register<string>({
     useValue: prefix,
 });
 rootContainer.register<Logger>(Logger);
-rootContainer.register<MiddlewareMount>({
-    provide: InjectionTokens.MIDDLEWARE_MOUNT,
-    useValue: {
-        middleware: LoggerMiddleware
-    },
-    multi: true
-});
 
-const server = new Server();
+const server = Server.create(MainModule);
 server.expressApplication.use("/body", route);
 server.listen(PORT);
 

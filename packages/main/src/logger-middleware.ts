@@ -12,7 +12,7 @@ export class LoggerMiddleware extends Middleware {
     }
 
     callback(@inject(InjectionTokens.BODY) body: unknown): void {
-        this.logger.log(`New request...${body}`);
+        this.logger.log(`New request... body = ${JSON.stringify(body)}`);
     }
 
 }

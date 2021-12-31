@@ -6,6 +6,7 @@ import { setupRequestDiMiddleware } from "../middleware";
 import { Middleware, MiddlewareCallback, MiddlewareMount } from "../types/middleware-mount.type";
 import { Constructor } from "@proto/utils";
 import { getArgumentDependencies } from "di/src/decorators/decorators-utils";
+import { parseModuleOptions } from "./module-manager";
 
 rootContainer.register<MiddlewareMount>({
     provide: InjectionTokens.MIDDLEWARE_MOUNT,
@@ -14,32 +15,21 @@ rootContainer.register<MiddlewareMount>({
     },
     multi: true,
 });
-rootContainer.register<MiddlewareMount>({
-    provide: InjectionTokens.MIDDLEWARE_MOUNT,
-    useValue: {
-        middleware: express.json()
-    },
-    multi: true,
-});
-rootContainer.register<MiddlewareMount>({
-    provide: InjectionTokens.MIDDLEWARE_MOUNT,
-    useValue: {
-        middleware: express.urlencoded({
-            extended: false,
-        })
-    },
-    multi: true,
-});
 
 export class Server {
 
     private readonly _app: express.Application = express();
 
+    public get expressApplication() { return this._app; }
+
     constructor() {
         initMiddlewares(this._app);
     }
 
-    public get expressApplication() { return this._app; }
+    static create(module: Constructor): Server {
+        parseModuleOptions(module);
+        return new Server();
+    }
 
     public listen(port: number = 3000) {
         const server = http.createServer(this._app);
@@ -74,12 +64,12 @@ function initMiddlewares(app: express.Application) {
             } else {
                 callback = mount.middleware;
             }
+            console.log(`mounting middleware ${mount.middleware.name} on path ${mount.path ?? "undefined"}`);
             mountMiddlewareFunction(callback, mount.path);
         }
     );
 
     function mountMiddlewareFunction(callback: express.RequestHandler, path?: string) {
-        console.log(`mount middleware ${callback.name}`);
         if (path) {
             app.use(path, callback);
         } else {
@@ -94,6 +84,9 @@ function isMiddlewareConstructor(mount: MiddlewareCallback): mount is Constructo
 }
 
 function buildRequestHandler(middlewareClass: Constructor<Middleware>): express.RequestHandler {
+
+    console.log(`building request handler for ${middlewareClass.name}`);
+
     const tokens = getArgumentDependencies(middlewareClass, "callback");
     const instance = rootContainer.get<Middleware>(middlewareClass);
     return (request, response, next): void => {
