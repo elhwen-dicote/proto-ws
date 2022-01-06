@@ -23,7 +23,7 @@ export class Server {
 
     public get expressApplication() { return this._app; }
 
-    constructor() {
+    private constructor() {
         initMiddlewares(this._app);
     }
 

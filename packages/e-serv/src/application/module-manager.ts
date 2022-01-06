@@ -7,8 +7,8 @@ const moduleMap = new WeakMap<Constructor, Container>();
 
 export function parseModuleOptions(module: Constructor) {
     const options = getModuleOptions(module);
-    if (options.middleware) {
-        installMiddlewares(options.middleware);
+    if (options.middlewares) {
+        installMiddlewares(options.middlewares);
     }
 }
 

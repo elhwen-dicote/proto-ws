@@ -3,7 +3,7 @@ import { module } from "@proto/e-serv";
 import { LoggerMiddleware } from "./logger-middleware";
 
 @module({
-    middleware: [
+    middlewares: [
         { middleware: express.json() },
         { middleware: express.urlencoded({ extended: false }) },
         { middleware: LoggerMiddleware },
