@@ -1,12 +1,16 @@
 import express from "express";
+
 import {
     Container,
     getArgumentDependencies,
     formatToken,
     InjectionToken,
-    isInjectionToken
+    isInjectionToken,
+    ProviderOrConstructor,
+    getRealProvider,
 } from "@proto/di";
 import { Constructor, getOrCreate } from "@proto/utils";
+
 import { Middleware, MiddlewareMount, isMiddleware } from "../types";
 import { InjectionTokens } from "../injection-tokens";
 import { getModuleOptions } from "../decorators";
@@ -19,6 +23,9 @@ export function parseModuleOptions(module: Constructor) {
     const container = getOrCreateContainer(module);
     if (options.middlewares) {
         installMiddlewares(container, options.middlewares);
+    }
+    if (options.providers) {
+        installProviders(container, options.providers);
     }
 }
 
@@ -74,4 +81,12 @@ function buildRequestHandler(container: Container, middleware: InjectionToken): 
 
         };
     } else return instance;
+}
+
+function installProviders(container: Container, providers: ProviderOrConstructor[]) {
+    providers.forEach(
+        (providerOrConstructor) => {
+            container.register(getRealProvider(providerOrConstructor));
+        }
+    );
 }

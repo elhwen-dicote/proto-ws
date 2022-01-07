@@ -1,12 +1,12 @@
 import {
     getOrCreate,
     setIfNotPresent,
-    Constructor,
-    isConstructor
+    Constructor
 } from "@proto/utils";
 import {
     InjectionToken,
     Provider,
+    getRealProvider,
     isClassProvider,
     isValueProvider,
     isFactoryProvider,
@@ -34,12 +34,7 @@ export class Container {
     ) { }
 
     register<T>(constructorOrProvider: Constructor<T> | Provider<T>): this {
-        const provider: Provider<T> = (isConstructor<T>(constructorOrProvider)) ?
-            {
-                provide: constructorOrProvider,
-                useClass: constructorOrProvider
-            }
-            : constructorOrProvider;
+        const provider = getRealProvider(constructorOrProvider);
 
         const isMulti = isScopedValueProvider(provider)
             ? false
