@@ -4,9 +4,9 @@ import { LoggerMiddleware } from "./logger-middleware";
 
 @module({
     middlewares: [
-        { middleware: express.json() },
-        { middleware: express.urlencoded({ extended: false }) },
-        { middleware: LoggerMiddleware },
+        { requestHandler: express.json() },
+        { requestHandler: express.urlencoded({ extended: false }) },
+        { requestHandler: LoggerMiddleware },
     ]
 })
 export class MainModule {

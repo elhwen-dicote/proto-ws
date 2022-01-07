@@ -6,7 +6,8 @@ export {
 } from "./decorators";
 export {
     InjectionToken,
-    // isInjectionToken,
+    isInjectionToken,
+    formatToken,
     // Provider,
     // isProvider,
     // ClassProvider,

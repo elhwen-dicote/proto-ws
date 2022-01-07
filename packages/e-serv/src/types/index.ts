@@ -2,10 +2,10 @@ export { ModuleOptions } from "./module-options.type";
 export {
     MiddlewareMount,
     Middleware,
-    MiddlewareCallback
 } from "./middleware-mount.type";
 export {
     ClassType,
     isModuleConstructor,
-    isMiddlewareConstructor
+    isMiddlewareConstructor,
+    isMiddleware,
 } from "./class-type.type";

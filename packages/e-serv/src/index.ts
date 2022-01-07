@@ -8,5 +8,4 @@ export {
     ModuleOptions,
     Middleware,
     MiddlewareMount,
-    MiddlewareCallback
 } from "./types";

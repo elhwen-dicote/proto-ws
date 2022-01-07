@@ -4,7 +4,7 @@ import {
     Scope,
     ScopeContext
 } from "@proto/di";
-import { rootContainer } from "../container/container";
+import { rootContainer } from "../container";
 import { InjectionTokens } from "../injection-tokens";
 
 declare global {

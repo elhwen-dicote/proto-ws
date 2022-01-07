@@ -14,3 +14,9 @@ export function isModuleConstructor(Cls: unknown): boolean {
 export function isMiddlewareConstructor(Cls: unknown): Cls is Constructor<Middleware> {
     return isConstructor(Cls) && getClassType(Cls) === ClassType.middleware;
 }
+
+export function isMiddleware(object: unknown): object is Middleware {
+    return object != null
+        && typeof object === "object"
+        && isMiddlewareConstructor(object.constructor);
+}
