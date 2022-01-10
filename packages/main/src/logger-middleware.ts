@@ -1,6 +1,5 @@
 import { inject } from "@proto/di";
-import { InjectionTokens, Middleware } from "@proto/e-serv";
-import { middleware } from "e-serv/src/decorators/middleware.decorator";
+import { InjectionTokens, Middleware, middleware } from "@proto/e-serv";
 import { Logger } from "./logger";
 
 @middleware()

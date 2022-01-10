@@ -4,10 +4,10 @@ import { Constructor } from "@proto/utils";
 import { rootContainer } from "../container";
 import { InjectionTokens } from "../injection-tokens";
 import { setupRequestDiMiddleware } from "../middleware";
-import { MiddlewareMount } from "../types/middleware-mount.type";
+import { MiddlewareDef, MiddlewareMount, RouterMount } from "../types";
 import { parseModuleOptions } from "./module-manager";
 
-rootContainer.register<MiddlewareMount>({
+rootContainer.register<MiddlewareDef>({
     provide: InjectionTokens.MIDDLEWARE_MOUNT,
     useValue: {
         requestHandler: setupRequestDiMiddleware
@@ -23,6 +23,7 @@ export class Server {
 
     private constructor() {
         initMiddlewares(this._app);
+        initRoutes(this._app);
     }
 
     static create(module: Constructor): Server {
@@ -54,7 +55,7 @@ export class Server {
 }
 
 function initMiddlewares(app: express.Application) {
-    const tokens = rootContainer.get<{ path: string; requestHandler: express.RequestHandler; }[]>(InjectionTokens.MIDDLEWARE_MOUNT);
+    const tokens = rootContainer.get<MiddlewareMount[]>(InjectionTokens.MIDDLEWARE_MOUNT);
     tokens.forEach(
         ({ path, requestHandler }) => {
             console.log(`mounting middleware ${requestHandler.name} on path ${path ?? "undefined"}`);
@@ -62,6 +63,20 @@ function initMiddlewares(app: express.Application) {
                 app.use(path, requestHandler);
             } else {
                 app.use(requestHandler);
+            }
+        }
+    );
+}
+
+function initRoutes(app: express.Application): void {
+    const tokens = rootContainer.get<RouterMount[]>(InjectionTokens.ROUTER_MOUNT);
+    tokens.forEach(
+        ({ path, router }) => {
+            console.log(`mounting router ${router.name} on path ${path ?? "undefined"}`);
+            if (path) {
+                app.use(path, router);
+            } else {
+                app.use(router);
             }
         }
     );

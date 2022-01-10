@@ -1,11 +1,15 @@
-import express from "express";
-import { InjectionTokens, rootContainer } from "@proto/e-serv";
+import { inject } from "@proto/di";
+import { InjectionTokens, router } from "@proto/e-serv";
+import { get } from "e-serv/src/decorators/method.decorator";
+import { Logger } from "./logger";
 
-export const route = express.Router();
-route.get("/",
-    (req, res, _next) => {
-        const context = req.context;
-        const body = rootContainer.get(InjectionTokens.BODY, context);
-        console.log(body);
-        res.json(body);
-    });
+@router("/")
+export class MainRouter {
+
+    @get("/body")
+    test(logger: Logger, @inject(InjectionTokens.BODY) body: unknown) {
+        logger.log(`roue handler body : ${JSON.stringify(body)}`);
+        return body;
+    }
+
+}

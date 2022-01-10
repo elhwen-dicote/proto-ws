@@ -1,10 +1,10 @@
-import { Provider } from "@proto/di";
-import { ProviderOrConstructor } from "di/src/types";
-import { MiddlewareMount } from "./middleware-mount.type";
+import { InjectionToken, ProviderOrConstructor } from "@proto/di";
+import { MiddlewareDef } from "./middleware-mount.type";
 
 export interface ModuleOptions {
 
-    middlewares?: MiddlewareMount[];
+    middlewares?: MiddlewareDef[];
     providers?: ProviderOrConstructor[];
+    routes?: InjectionToken[];
 
 }

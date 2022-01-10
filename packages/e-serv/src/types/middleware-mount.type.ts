@@ -5,7 +5,12 @@ export interface Middleware {
     callback(...arg: unknown[]): unknown;
 }
 
-export interface MiddlewareMount {
+export interface MiddlewareDef {
     path?: string;
     requestHandler: express.RequestHandler | InjectionToken;
+}
+
+export interface MiddlewareMount {
+    path?: string;
+    requestHandler: express.RequestHandler;
 }

@@ -2,8 +2,9 @@ import express from "express";
 import { module } from "@proto/e-serv";
 import { LoggerMiddleware } from "./logger-middleware";
 import { Logger, prefix_token } from "./logger";
+import { MainRouter } from "./route";
 
-const prefix = "main-proto-ws:";
+const prefix = "main-proto:";
 
 @module({
     middlewares: [
@@ -11,13 +12,17 @@ const prefix = "main-proto-ws:";
         { requestHandler: express.urlencoded({ extended: false }) },
         { requestHandler: LoggerMiddleware },
     ],
-    providers:[
+    providers: [
         LoggerMiddleware,
         {
             provide: prefix_token,
             useValue: prefix
         },
         Logger,
+        MainRouter,
+    ],
+    routes: [
+        MainRouter,
     ]
 })
 export class MainModule {
