@@ -1,4 +1,4 @@
-import { inject, injectable } from "@proto/di";
+import { inject } from "@proto/di";
 import { InjectionTokens, Middleware } from "@proto/e-serv";
 import { middleware } from "e-serv/src/decorators/middleware.decorator";
 import { Logger } from "./logger";

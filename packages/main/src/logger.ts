@@ -1,5 +1,4 @@
 import { inject, injectable } from "@proto/di";
-import { rootContainer } from "@proto/e-serv";
 
 export const prefix_token = Symbol("main.prefix");
 
